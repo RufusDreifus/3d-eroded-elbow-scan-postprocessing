@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv/
+venv/
+env/
+
+# IDE / editor
+.spyproject/
+.vscode/
+.idea/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+
+# Ignore generated outputs (keep folder structure)
+results/csv/*
+results/figures/*
+
+# Allow example outputs if needed
+!results/csv/example_*.csv
+!results/figures/example_*.png
+
+# Temporary matplotlib exports
+*.pdf

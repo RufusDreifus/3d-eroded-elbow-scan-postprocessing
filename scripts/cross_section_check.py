@@ -1,20 +1,3 @@
-"""
-cross_section_check.py
-
-Cross-section verification for two aligned STL surfaces stored in a single file.
-The script:
-1. separates the two largest connected components,
-2. identifies inner and outer surfaces,
-3. estimates the bend path using midpoint binning and PCA,
-4. creates cross-sections normal to the estimated bend path,
-5. visualizes reconstructed and eroded section curves.
-
-Reconstructed sections are shown in red.
-Eroded sections are shown in blue.
-
-"""
-
-
 import numpy as np
 import pyvista as pv
 from scipy.spatial import cKDTree as KDTree
@@ -158,6 +141,7 @@ def largest_polyline(slice_poly: pv.PolyData):
 # ============================================================
 # Load STL, split eroded/reconstructed
 # ============================================================
+
 mesh = ensure_polydata(pv.read(INPUT_STL))
 s0, s1 = split_two_largest_components(mesh)
 inner, outer = pick_inner_outer_by_radius(s0, s1)
@@ -169,11 +153,13 @@ e0, e1, e2 = R[:, 0], R[:, 1], R[:, 2]  # bend plane approx = span(e0,e1)
 # ============================================================
 # Midpoints (outer -> nearest inner)
 # ============================================================
+
 inner_tree = KDTree(inner.points)
 _, idx_i = inner_tree.query(outer.points, k=1)
 mid_pts = 0.5 * (outer.points + inner.points[idx_i])
 
 # Project midpoints to bend plane coordinates (theta for binning)
+
 v = mid_pts - centroid
 u0 = v @ e0
 u1 = v @ e1
@@ -183,6 +169,7 @@ theta = np.arctan2(u1, u0)  # [-pi, pi]
 # ============================================================
 # Optional: restrict theta sweep (strongly recommended)
 # ============================================================
+
 if USE_THETA_WINDOW:
     a0 = np.deg2rad(THETA_START_DEG)
     a1 = np.deg2rad(THETA_END_DEG)
@@ -206,6 +193,7 @@ if USE_THETA_WINDOW:
 # ============================================================
 # Estimate bend path by theta binning (robust)
 # ============================================================
+
 edges = np.linspace(-np.pi, np.pi, N_THETA_BINS + 1)
 
 path_pts = []
@@ -233,12 +221,14 @@ if len(path_pts) < 8:
     )
 
 # Sort by theta and unwrap to avoid +/-pi jump
+
 order = np.argsort(path_theta)
 path_pts = path_pts[order]
 path_theta = path_theta[order]
 path_theta_u = np.unwrap(path_theta)
 
 # Outlier rejection by radius in bend plane (robust)
+
 vv = path_pts - centroid
 r = np.sqrt((vv @ e0) ** 2 + (vv @ e1) ** 2)
 
@@ -257,10 +247,12 @@ if len(path_pts) < 8:
     )
 
 # Sort again by unwrapped theta
+
 order = np.argsort(path_theta_u)
 path_pts = path_pts[order]
 
 # Smooth the path to stabilize tangents
+
 P = path_pts.copy()
 for _ in range(int(SMOOTH_ITERS)):
     P2 = P.copy()
@@ -269,10 +261,12 @@ for _ in range(int(SMOOTH_ITERS)):
 path_pts = P
 
 # Resample to stations and compute tangents
+
 stations = resample_polyline(path_pts, int(N_STATIONS))
 tangents = compute_tangents(stations)
 
 # ---- Optional: extend stations to cover full model length (straight ends) ----
+
 EXTEND_TO_BOUNDS = True
 EXTEND_FRACTION = 0.09  # extend by ~8% of bounding-box diagonal on each side
 
@@ -292,6 +286,7 @@ if EXTEND_TO_BOUNDS:
 # ============================================================
 # Plot slices with planes normal to bend path
 # ============================================================
+
 p = pv.Plotter()
 p.set_background("white")
 
