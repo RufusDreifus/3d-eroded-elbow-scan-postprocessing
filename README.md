@@ -38,8 +38,10 @@ The tools are intended for engineering, research, and educational use, particula
 │
 ├── data/
 │   ├── cut_initial_thickness_1_7_mm.stl
+│   ├── Inside_surface.stl 
 │   ├── New_reconstructed_1_7.stl
-│   └── New_reconstructed_aligned_1.stl
+│   ├── New_reconstructed_aligned_1.stl
+│   └── reconstruction.blend
 │
 ├── results/
 │   ├── csv/
@@ -63,7 +65,7 @@ Interactive wall-thickness visualization for two-surface STL files.
 - interactive point sampling (right-click)  
 - UT-style grid generation on the outer surface  
 - CSV export of sampled UT grid data  
-
+- Surface reconstruction script is available in Blender file inside Data folder, with Inside_surface.stl as an input. 
 ---
 
 ### `cross_section_check.py`
